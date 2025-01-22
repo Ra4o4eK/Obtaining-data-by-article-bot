@@ -11,7 +11,7 @@ from config.config import settings
 
 
 jobstores = {
-    'default': SQLAlchemyJobStore(url=settings.get_db_url())  # Используем SQLite для примера
+    'default': SQLAlchemyJobStore(url=settings.get_db_url())
 }
 scheduler = BackgroundScheduler(jobstores=jobstores)
 atexit.register(lambda: scheduler.shutdown())
@@ -46,10 +46,8 @@ async def get_product_data(artikul: int) -> tuple:
 async def update_product_data(artikul: int):
     query = ProductsQueries()
     try:
-        # Запрашиваем новые данные с Wildberries
         name, price, rating, total_quantity = await get_product_data(artikul)
 
-        # Обновляем данные в базе
         db_product = await query.get_product(artikul)
         if db_product is not None:
             await query.update_product({

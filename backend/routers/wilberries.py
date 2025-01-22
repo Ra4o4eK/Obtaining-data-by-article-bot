@@ -12,25 +12,25 @@ router = APIRouter()
 async def collecting_data_by_article(product: ProductRequest) -> None:
     artikul = product.artikul
 
-    name, price, rating, total_quantity = get_product_data(artikul)
+    name, price, raiting, total_quantity = await get_product_data(artikul)
 
     query = ProductsQueries()
     db_product = await query.create_product(
         artikul=artikul,
         name=name,
         price=price,
-        rating=rating,
+        raiting=raiting,
         total_quantity=total_quantity
     )
 
-    return {"message": "Данные о товаре успешно сохранены", "product": db_product}
+    return db_product
 
 
 @router.get("/api/v1/subscribe/{artikul}")
 async def getting_subscribed(artikul: int) -> None:
     query = ProductsQueries()
     db_product = await query.get_product(artikul)
-    name, price, rating, total_quantity = get_product_data(artikul)
+    name, price, rating, total_quantity = await get_product_data(artikul)
 
     if db_product is not None:
         await query.update_product({
