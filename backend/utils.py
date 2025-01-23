@@ -1,4 +1,5 @@
 import requests
+import logging
 
 from pydantic import BaseModel
 from fastapi import HTTPException
@@ -19,7 +20,7 @@ class Token(BaseModel):
 
 
 jobstores = {
-    'default': SQLAlchemyJobStore(url=settings.get_db_url())
+    'default': SQLAlchemyJobStore(url=settings.get_db_url_for_scheduler())
 }
 scheduler = AsyncIOScheduler(jobstores=jobstores)
 
@@ -62,4 +63,4 @@ async def update_product_data(artikul: int):
                 "subscribe": True
             })
     except Exception as e:
-        print(f"Ошибка при обновлении данных для товара {artikul}: {e}")
+        logging.error(f"Ошибка при обновлении данных для товара {artikul}: {e}")

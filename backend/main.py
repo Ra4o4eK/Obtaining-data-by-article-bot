@@ -5,6 +5,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from routers import wilberries, auth
+from utils import scheduler
 
 
 logging.basicConfig(
@@ -18,14 +19,10 @@ logging.basicConfig(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    try:
-        scheduler.start()
-        logging.error(f"JOBS: {scheduler.get_jobs()}")
-    except Exception as e:
-        logging.error(f"Ошибка инициализации планировщика: {e}")
-    finally:
-        yield
-        scheduler.shutdown()
+    scheduler.start()
+    logging.error(f"JOBS: {scheduler.get_jobs()}")
+    yield
+    scheduler.shutdown()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -34,4 +31,4 @@ app.include_router(auth.router)
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", log_config=None)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000)
