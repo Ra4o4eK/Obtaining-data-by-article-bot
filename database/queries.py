@@ -46,11 +46,10 @@ class ProductsQueries:
         self,
         artikul: int,
         params: dict
-    ) -> Product:
+    ) -> None:
         async with self.session_factory() as session:
             async with session.begin():
-                product = await session.execute(
+                await session.execute(
                     update(Product).
                     where(Product.artikul == artikul).
                     values(params))
-                return product

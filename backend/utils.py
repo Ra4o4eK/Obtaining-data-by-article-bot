@@ -1,24 +1,27 @@
 import requests
 
-import atexit
 from pydantic import BaseModel
 from fastapi import HTTPException
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
 from database.queries import ProductsQueries
 from config.config import settings
 
 
+class ProductRequest(BaseModel):
+    artikul: int
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
 jobstores = {
     'default': SQLAlchemyJobStore(url=settings.get_db_url())
 }
-scheduler = BackgroundScheduler(jobstores=jobstores)
-atexit.register(lambda: scheduler.shutdown())
-
-
-class ProductRequest(BaseModel):
-    artikul: int
+scheduler = AsyncIOScheduler(jobstores=jobstores)
 
 
 async def get_product_data(artikul: int) -> tuple:
