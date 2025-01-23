@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 
 from database.queries import ProductsQueries
 from utils import get_product_data, update_product_data, ProductRequest
+from utils import scheduler
 from jwt import get_current_token
 
 
@@ -57,12 +58,12 @@ async def getting_subscribed(
             total_quantity=total_quantity,
             subscribe=True,
         )
-    # scheduler.add_job(
-    #     update_product_data,
-    #     trigger=IntervalTrigger(minutes=30),
-    #     args=(artikul,),
-    #     id=f"update_product_{artikul}",
-    #     replace_existing=True,
-    # )
+    scheduler.add_job(
+        update_product_data,
+        trigger=IntervalTrigger(minutes=30),
+        args=(artikul,),
+        id=f"update_product_{artikul}",
+        replace_existing=True,
+    )
 
     return {"message": f"Подписка на товар {artikul} успешно создана"}
